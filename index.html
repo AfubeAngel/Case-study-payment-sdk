@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Case Study — Omni Payment Gateway SDK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --ink-muted: #5a5a5a;
+    --ink-faint: #a8a8a8;
+    --surface: #f9f7f4;
+    --surface-alt: #f0ede8;
+    --accent: #e84b1c;
+    --accent-dim: #f5c4b3;
+    --accent-bg: #fdf1ed;
+    --green: #1a6641;
+    --green-bg: #eaf3ed;
+    --blue: #1550a2;
+    --blue-bg: #e8eef9;
+    --border: rgba(13,13,13,0.1);
+    --border-strong: rgba(13,13,13,0.2);
+    --radius: 4px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-bottom: 1px solid var(--border-strong);
+    padding: 2rem 0 0;
+    background: var(--ink);
+    color: #f9f7f4;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.12;
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-dim);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #f9f7f4;
+    margin-bottom: 1.5rem;
+    max-width: 700px;
+  }
+
+  .header h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(249,247,244,0.1);
+    margin-top: 2rem;
+  }
+
+  .meta-item { }
+  .meta-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(249,247,244,0.4);
+    margin-bottom: 4px;
+  }
+  .meta-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f9f7f4;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  section:last-child { border-bottom: none; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--accent-dim);
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.25rem;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    color: var(--ink);
+  }
+
+  p {
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+    max-width: 680px;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  /* ── STAT BAND ── */
+  .stat-band {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border-strong);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+
+  .stat {
+    background: white;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-desc {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+
+  /* ── CHALLENGE CARDS ── */
+  .challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .challenge-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--accent);
+  }
+
+  .challenge-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .challenge-card p {
+    font-size: 13.5px;
+    margin: 0;
+  }
+
+  /* ── PAYMENT RAILS ── */
+  .rails-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .rail-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .rail-card:hover {
+    border-color: var(--border-strong);
+  }
+
+  .rail-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .rail-icon.orange { background: var(--accent-bg); }
+  .rail-icon.green  { background: var(--green-bg); }
+  .rail-icon.blue   { background: var(--blue-bg); }
+
+  .rail-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .rail-desc {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ── ARCHITECTURE SECTION ── */
+  .arch-block {
+    background: var(--ink);
+    color: #f9f7f4;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 1rem;
+  }
+
+  .arch-row:last-child { margin-bottom: 0; }
+
+  .arch-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(249,247,244,0.35);
+    width: 120px;
+    flex-shrink: 0;
+    padding-top: 10px;
+  }
+
+  .arch-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .arch-chip {
+    background: rgba(249,247,244,0.07);
+    border: 1px solid rgba(249,247,244,0.12);
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: rgba(249,247,244,0.8);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .arch-chip.accent {
+    background: rgba(232,75,28,0.18);
+    border-color: rgba(232,75,28,0.4);
+    color: #f5c4b3;
+  }
+
+  /* ── PRODUCT ECOSYSTEM ── */
+  .ecosystem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 2rem;
+  }
+
+  .eco-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eco-item:last-child { border-bottom: none; }
+
+  .eco-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--accent);
+  }
+
+  .eco-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 220px;
+    flex-shrink: 0;
+  }
+
+  .eco-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .eco-tag {
+    margin-left: auto;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 100px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .eco-tag.angular { background: #fce4e0; color: #b83c28; }
+  .eco-tag.next    { background: #e8e8e8; color: #333; }
+  .eco-tag.ts      { background: var(--blue-bg); color: var(--blue); }
+
+  /* ── OUTCOMES ── */
+  .outcome-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .outcome-card {
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid transparent;
+  }
+
+  .outcome-card.green {
+    background: var(--green-bg);
+    border-color: rgba(26,102,65,0.15);
+  }
+
+  .outcome-card.blue {
+    background: var(--blue-bg);
+    border-color: rgba(21,80,162,0.15);
+  }
+
+  .outcome-card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: var(--ink);
+  }
+
+  .outcome-card.green h3 { color: var(--green); }
+  .outcome-card.blue  h3 { color: var(--blue); }
+
+  .outcome-card p {
+    font-size: 13px;
+    margin: 0;
+  }
+
+  /* ── TECH STACK ── */
+  .stack-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.5rem;
+  }
+
+  .stack-chip {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-family: 'DM Mono', 'DM Sans', monospace;
+  }
+
+  /* ── QUOTE ── */
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 1.25rem 1.5rem;
+    background: var(--accent-bg);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    margin: 2.5rem 0;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.5;
+    max-width: 700px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2rem 0;
+    color: var(--ink-faint);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 2.5rem 0;
+    text-align: center;
+  }
+
+  footer p {
+    color: rgba(249,247,244,0.4);
+    font-size: 12px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  footer strong {
+    color: rgba(249,247,244,0.7);
+    font-weight: 500;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .stat-band { grid-template-columns: 1fr; }
+    .rails-grid { grid-template-columns: 1fr 1fr; }
+    .outcome-grid { grid-template-columns: 1fr; }
+    .eco-name { min-width: unset; }
+    .eco-tag { display: none; }
+    .arch-label { width: 80px; font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ───── HEADER ───── -->
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Case Study · Fintech Engineering</div>
+    <h1>Omni Payment Gateway <em>SDK</em></h1>
+    <p style="color: rgba(249,247,244,0.55); font-size: 1rem; max-width: 580px; margin-bottom: 0;">
+      A unified multi-rail payment SDK powering card, transfer, QR, Pay with OPay, Google Pay, Apple Pay — and the entire ecosystem of products built on top of it.
+    </p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <div class="meta-label">Role</div>
+        <div class="meta-value">Frontend / SDK Engineer</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Domain</div>
+        <div class="meta-value">Fintech · Payments</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Products Powered</div>
+        <div class="meta-value">5 Interfaces</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Payment Rails</div>
+        <div class="meta-value">6 Methods</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ───── OVERVIEW ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Overview</div>
+    <h2>The core of a full-stack payment ecosystem</h2>
+    <p>
+      The Omni Payment Gateway SDK is the technical foundation of a fintech platform offering payment infrastructure to merchants across Nigeria. Rather than being a standalone product, the SDK is the shared payment layer embedded across multiple distinct products — from a merchant-facing storefront to a backoffice used by platform administrators.
+    </p>
+    <p>
+      This case study explores how the SDK was designed to be embeddable, extensible, and production-grade — supporting diverse payment methods while maintaining a consistent developer and user experience across every surface it powers.
+    </p>
+
+    <div class="stat-band">
+      <div class="stat">
+        <div class="stat-number">6</div>
+        <div class="stat-desc">Payment rails integrated<br>(card, transfer, QR, OPay, GPay, APay)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">5</div>
+        <div class="stat-desc">Products powered by<br>the same SDK</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">3</div>
+        <div class="stat-desc">Angular apps + 1 Next.js<br>site integrating the SDK</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CHALLENGE ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">The Challenge</div>
+    <h2>One payment experience, many surfaces</h2>
+    <p>
+      Fintech platforms in the Nigerian market face a compounded problem: payment methods are fragmented across providers, each with its own integration contract. Building that integration once per product is expensive — building it five times is unsustainable.
+    </p>
+    <p>
+      The challenge was to design a single SDK that could be embedded across radically different contexts — a merchant storefront, a public-facing website, a standalone payment page, and a pension checkout — without requiring each product team to reason about the underlying payment rails.
+    </p>
+
+    <div class="challenge-grid">
+      <div class="challenge-card">
+        <h3>Fragmented payment rails</h3>
+        <p>Card, transfer, QR code, OPay wallet, Google Pay, and Apple Pay each have distinct authentication and completion flows that needed unification.</p>
+      </div>
+      <div class="challenge-card">
+        <h3>Multi-product embedding</h3>
+        <p>Five separate Angular and Next.js products all needed payment capability without duplicating integration logic across codebases.</p>
+      </div>
+      <div class="challenge-card">
+        <h3>Merchant-specific checkout</h3>
+        <p>Each merchant's branding, fees, and available methods differ. The SDK had to be configurable at runtime without rebuild.</p>
+      </div>
+      <div class="challenge-card">
+        <h3>Regulatory and security constraints</h3>
+        <p>PCI-DSS compliance expectations, OTP flows, and third-party provider tokens had to be handled consistently and securely.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SOLUTION ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Solution</div>
+    <h2>Payment rails as a single, composable layer</h2>
+    <p>
+      The SDK exposes a clean, product-agnostic API that abstracts all provider-specific logic. A consuming product initializes the SDK with a transaction context — amount, merchant config, available methods — and the SDK handles the rest: rendering the payment UI, routing to the correct provider, managing polling or webhook callbacks, and emitting a result event.
+    </p>
+
+    <div class="pull-quote">
+      "Embed once, pay any way — the SDK handles routing, UI, and provider negotiation invisibly."
+    </div>
+
+    <h3>Payment rails supported</h3>
+    <div class="rails-grid">
+      <div class="rail-card">
+        <div class="rail-icon orange">💳</div>
+        <div class="rail-name">Card Payment</div>
+        <p class="rail-desc">Full card entry flow with OTP challenge and 3DS support.</p>
+      </div>
+      <div class="rail-card">
+        <div class="rail-icon green">🏦</div>
+        <div class="rail-name">Bank Transfer</div>
+        <p class="rail-desc">Dynamic virtual account generation per transaction with confirmation polling.</p>
+      </div>
+      <div class="rail-card">
+        <div class="rail-icon blue">📱</div>
+        <div class="rail-name">QR Code</div>
+        <p class="rail-desc">QR generation with real-time payment status listening.</p>
+      </div>
+      <div class="rail-card">
+        <div class="rail-icon orange">🔶</div>
+        <div class="rail-name">Pay with OPay</div>
+        <p class="rail-desc">OPay wallet deep-link and redirect flow with callback handling.</p>
+      </div>
+      <div class="rail-card">
+        <div class="rail-icon green">G</div>
+        <div class="rail-name">Google Pay</div>
+        <p class="rail-desc">Google Pay Web API integration with tokenized payment dispatch.</p>
+      </div>
+      <div class="rail-card">
+        <div class="rail-icon blue"> </div>
+        <div class="rail-name">Apple Pay</div>
+        <p class="rail-desc">Apple Pay JS Session with merchant validation and payment token handling.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── ARCHITECTURE ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Architecture</div>
+    <h2>How it's built</h2>
+    <p>
+      The SDK is structured as a self-contained module with a well-defined initialization interface. Its internal architecture separates concerns cleanly: a routing layer determines which payment rail is active, provider adapters normalize external APIs, and a shared state machine drives the UI through transaction states.
+    </p>
+
+    <div class="arch-block">
+      <div class="arch-row">
+        <div class="arch-label">Entrypoint</div>
+        <div class="arch-chips">
+          <span class="arch-chip accent">SDK.init(config)</span>
+          <span class="arch-chip">Transaction context</span>
+          <span class="arch-chip">Merchant config</span>
+          <span class="arch-chip">Callback handlers</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Rail router</div>
+        <div class="arch-chips">
+          <span class="arch-chip">Method selector UI</span>
+          <span class="arch-chip">Availability logic</span>
+          <span class="arch-chip">Fee calculation</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Adapters</div>
+        <div class="arch-chips">
+          <span class="arch-chip">Card adapter</span>
+          <span class="arch-chip">Transfer adapter</span>
+          <span class="arch-chip">OPay adapter</span>
+          <span class="arch-chip">GPay adapter</span>
+          <span class="arch-chip">APay adapter</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">State layer</div>
+        <div class="arch-chips">
+          <span class="arch-chip">idle → pending → processing → success / failed</span>
+        </div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-label">Output</div>
+        <div class="arch-chips">
+          <span class="arch-chip accent">onSuccess(txn)</span>
+          <span class="arch-chip accent">onFailure(err)</span>
+          <span class="arch-chip">onClose()</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── ECOSYSTEM ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Product Ecosystem</div>
+    <h2>Every product, powered by the same SDK</h2>
+    <p>
+      The value of the SDK is best understood in context: five separate products — each with its own domain, team, and UX concerns — all delegate payment execution to the same underlying module.
+    </p>
+
+    <div class="ecosystem-list">
+      <div class="eco-item">
+        <div class="eco-dot"></div>
+        <div class="eco-name">Merchant Storefront</div>
+        <div class="eco-desc">Online store for onboarded merchants — cart management, order tracking, and SDK-powered checkout at item purchase.</div>
+        <span class="eco-tag angular">Angular</span>
+      </div>
+      <div class="eco-item">
+        <div class="eco-dot"></div>
+        <div class="eco-name">Payment Pages</div>
+        <div class="eco-desc">Standalone pages merchants configure to collect fixed payments or sell event tickets. Each page launches the SDK on payment.</div>
+        <span class="eco-tag angular">Angular</span>
+      </div>
+      <div class="eco-item">
+        <div class="eco-dot"></div>
+        <div class="eco-name">Front Office (Merchant Portal)</div>
+        <div class="eco-desc">Merchant dashboard for transaction oversight, POS requests, payment links, invoices — and a route to the payment pages feature.</div>
+        <span class="eco-tag angular">Angular</span>
+      </div>
+      <div class="eco-item">
+        <div class="eco-dot"></div>
+        <div class="eco-name">Back Office (Admin Interface)</div>
+        <div class="eco-desc">Internal admin panel for platform operations — managing merchants, transactions, POS hardware, virtual accounts, and direct debit.</div>
+        <span class="eco-tag angular">Angular</span>
+      </div>
+      <div class="eco-item">
+        <div class="eco-dot"></div>
+        <div class="eco-name">Zest Official Website</div>
+        <div class="eco-desc">Marketing site with product marketplace and a one-time pension payment flow embedded via the SDK on the marketplace page.</div>
+        <span class="eco-tag next">Next.js</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── OUTCOMES ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Outcomes</div>
+    <h2>What this work delivered</h2>
+
+    <div class="outcome-grid">
+      <div class="outcome-card green">
+        <h3>Single source of truth for payments</h3>
+        <p>All payment logic lives in one place. Bug fixes, new payment methods, and compliance updates propagate to every product automatically.</p>
+      </div>
+      <div class="outcome-card blue">
+        <h3>Consistent checkout UX across surfaces</h3>
+        <p>Customers get the same familiar payment experience whether checking out from the storefront, a payment page, or the website.</p>
+      </div>
+      <div class="outcome-card blue">
+        <h3>Accelerated product iteration</h3>
+        <p>New products could integrate payments in hours, not weeks. The storefront and payment pages were shipped faster because checkout was already solved.</p>
+      </div>
+      <div class="outcome-card green">
+        <h3>Merchant-configurable without redeployment</h3>
+        <p>Available payment methods, fees, and branding are injected at runtime via merchant config — no rebuild needed per merchant or campaign.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── TECH STACK ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Technology</div>
+    <h2>Stack and tooling</h2>
+    <p>The SDK and surrounding ecosystem were built with a consistent, modern frontend stack across Angular applications and one Next.js surface.</p>
+
+    <div class="stack-row">
+      <span class="stack-chip">TypeScript</span>
+      <span class="stack-chip">Angular</span>
+      <span class="stack-chip">Next.js (Pages Router)</span>
+      <span class="stack-chip">RxJS</span>
+      <span class="stack-chip">Google Pay Web API</span>
+      <span class="stack-chip">Apple Pay JS</span>
+      <span class="stack-chip">OPay SDK</span>
+      <span class="stack-chip">REST APIs</span>
+      <span class="stack-chip">Webhook / Polling</span>
+      <span class="stack-chip">Virtual Account Service</span>
+      <span class="stack-chip">Direct Debit</span>
+      <span class="stack-chip">POS Integration</span>
+    </div>
+  </div>
+</section>
+
+<!-- ───── REFLECTION ───── -->
+<section>
+  <div class="container">
+    <div class="section-label">Reflection</div>
+    <h2>What this project demonstrates</h2>
+    <p>
+      More than any single feature, this project demonstrates the ability to think at the platform level — not just building what's needed today, but designing shared infrastructure that scales across an entire product family. The SDK represents a deliberate architectural choice: accept complexity in one place so every consumer can stay simple.
+    </p>
+    <p>
+      Working across five products also required deep fluency in API design, state management, and asynchronous payment flows — skills that are transferable to any product that involves real money, real time, and real users at scale.
+    </p>
+
+    <div class="pull-quote">
+      "The best infrastructure is invisible to the teams who build on it — and memorable to the users who experience it."
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Portfolio Case Study</strong> · Omni Payment Gateway SDK · Fintech Frontend Engineering</p>
+</footer>
+
+</body>
+</html>
