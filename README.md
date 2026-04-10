@@ -1,4 +1,4 @@
-# Omni Payment Gateway SDK
+# Payment Gateway SDK - Case Study
 
 A fintech case study showcasing a shared payment SDK that unifies fragmented payment rails across five downstream products.
 
