@@ -638,7 +638,13 @@
     <div class="section-label">Solution</div>
     <h2>Payment rails as a single, composable layer</h2>
     <p>
-      The SDK exposes a clean, product-agnostic API that abstracts all provider-specific logic. A consuming product initializes the SDK with a transaction context — amount, merchant config, available methods — and the SDK handles the rest: rendering the payment UI, routing to the correct provider, managing polling or webhook callbacks, and emitting a result event.
+      The SDK exposes a clean, product-agnostic API that abstracts all provider-specific logic. A consuming product initializes the SDK with a transaction context — amount, merchant config, available methods — and the SDK handles the rest: 
+     <ul>
+      <li>rendering the payment UI</li>
+      <li>routing to the correct provider</li>
+      <li>managing polling or webhook callbacks</li> and 
+      <li>emitting a result event.</li>
+     </ul>
     </p>
 
     <div class="pull-quote">
