@@ -374,6 +374,12 @@
     padding: 1rem 1.5rem;
     background: white;
     border-bottom: 1px solid var(--border);
+
+  /* Mobile screens */
+@media (max-width: 768px) {
+  .eco-item {
+    flex-direction: column; /* force row on small screens */
+  }
   }
 
   .eco-item:last-child { border-bottom: none; }
@@ -753,8 +759,10 @@
 
     <div class="ecosystem-list">
       <div class="eco-item">
+       <div class="eco-item1">
         <div class="eco-dot"></div>
         <div class="eco-name">Merchant Storefront</div>
+       </div>
         <div class="eco-desc">Online store for onboarded merchants — cart management, order tracking, and SDK-powered checkout at item purchase.</div>
         <span class="eco-tag angular">Angular</span>
       </div>
