@@ -259,6 +259,10 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin-top: 2rem;
+
+   @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+   }
   }
 
   .rail-card {
@@ -377,8 +381,9 @@
 
   /* Mobile screens */
 @media (max-width: 768px) {
-  .eco-item {
-    flex-direction: column; /* force row on small screens */
+    display: flex;
+    gap: 0.6rem;
+    flex-direction: column; 
   }
   }
 
@@ -537,6 +542,11 @@
     .eco-name { min-width: unset; }
     .eco-tag { display: none; }
     .arch-label { width: 80px; font-size: 9px; }
+     .eco-item {
+    display: flex;
+    gap: 0.6rem;
+    flex-direction: column; 
+  }
   }
 </style>
 </head>
