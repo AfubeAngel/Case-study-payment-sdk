@@ -6,14 +6,14 @@ A fintech case study showcasing a shared payment SDK that unifies fragmented pay
 
 - The core problem: fragmented payment rails that needed a single integration layer across multiple product surfaces.
 - The six payment methods supported: card payments with OTP/3DS, bank transfer with virtual account generation and polling, QR code checkout with real-time status updates, OPay wallet redirect flow, Google Pay Web API tokenized checkout, and Apple Pay JS session merchant validation.
-- The SDK architecture: a clean `SDK.init(config)` initialization API, a rail router that selects and validates payment methods, provider adapters for each payment channel, and a transaction state machine that drives order states from `idle` to `success` or `failed`.
-- The ecosystem: five products consuming the same SDK, including merchant storefront, payment pages, merchant portal, admin back office, and a Next.js marketing website with an embedded pension payment flow.
+- The SDK architecture: a clean transaction initialization API, a rail router that selects and validates payment methods, provider adapters for each payment channel, and a transaction state machine that drives order states.
+- The ecosystem: five products consuming the same SDK, including merchant storefront, payment pages, merchant portal, admin back office, and a Next.js marketing website with an embedded pension payment flow. Addiitonally available for integration for payment collection.
 - Outcomes: single source of truth for payments, consistent checkout UX, faster product shipping, and runtime merchant configuration without redeployment.
-- Tech stack: TypeScript, Angular, Next.js, RxJS, and integrations with payment provider APIs.
+- Tech stack: TypeScript, Angular and integrations with payment provider APIs.
 
 ## Overview
 
-The Omni Payment Gateway SDK is the shared payment layer for a Nigerian fintech platform. It is not a standalone checkout product; it is the embeddable payment engine used by multiple products with distinct domain needs.
+The Payment Gateway SDK is the shared payment layer for a fintech platform. It is not a standalone checkout product; it is the embeddable payment engine used by multiple products with distinct domain needs.
 
 ## Challenge
 
@@ -48,21 +48,11 @@ A single SDK was built to abstract provider-specific flows behind a unified API.
 
 The SDK is organized into clearly separated responsibilities:
 
-- `SDK.init(config)` entrypoint with merchant and transaction config
+- Transaction initialization entrypoint with merchant and transaction config
 - Rail router for method selection, availability checks, and fee logic
 - Provider adapters for card, transfer, OPay, Google Pay, and Apple Pay
-- Shared transaction state machine: `idle → pending → processing → success / failed`
-- Event callbacks: `onSuccess(txn)`, `onFailure(err)`, `onClose()`
-
-## Product ecosystem
-
-The SDK supports five downstream products:
-
-- **Merchant Storefront** — online storefront checkout for onboarded merchants (Angular)
-- **Payment Pages** — standalone payment pages that launch SDK checkout (Angular)
-- **Front Office Merchant Portal** — dashboard for transaction oversight and payment links (Angular)
-- **Back Office Admin Interface** — internal admin operations for merchants, transactions, and virtual accounts (Angular)
-- **Zest Official Website** — marketing site with an embedded pension checkout flow (Next.js)
+- Shared transaction state machine
+- Event callbacks
 
 ## Outcomes
 
